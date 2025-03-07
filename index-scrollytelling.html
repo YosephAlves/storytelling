@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scrollytelling</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+    <style>
+        #infog-body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+
+        /* scrollytelling */
+        .scrollytelling {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            height: 600vh;
+        }
+        .step {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            background: rgba(255, 255, 255, 0);
+            padding: 20px;
+            position: relative;
+        }
+        .svg-container {
+            position: sticky;
+            top: 200px;
+            width: 100%;
+            height: 400px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1;
+        }
+        #svg-scroll {
+            width: 100%;
+            height: 100%;
+            max-width: 741.2px;
+            max-height: 485.5px;
+            overflow: visible;
+        }
+        
+        #candeeiro, #papel, #lapis, #azeitona, #base-noite{
+            opacity: 0;
+            transition: transform 0.5s ease, opacity 0.5s ease;
+        }
+        #candeeiro { transform: translateX(-500px); }
+        #papel { transform: translateY(-500px); }
+        #lapis { transform: translate(300px, -200px); }
+        #sombra { opacity: 1; transition: opacity 0.5s ease; }
+        #base-noite {
+            opacity: 1;
+            position: relative;
+            transition: opacity 1s ease;
+            z-index: 1; 
+        }
+        #base-dia {
+            opacity: 1;
+            position: relative;
+            transition: opacity 1s ease;
+        }
+        .passo1, .passo2, .passo3, .passo4, .passo5 {
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            z-index: 10;
+        }
+        .next-section {
+            display: flex;
+            justify-content: center;
+            height: 100vh;
+            font-size: 24px;
+            text-align: center;
+            z-index: 2;
+            color: #16366e;
+            flex-direction: column;
+        }
+        .next-section p{
+            font-size: 20px;
+            text-align: center;
+            z-index: 2;
+            color: #16366e;
+            max-width: 700px;
+        }
+        #fundo-azul{
+            pointer-events: none;
+        }
+
+
+        /* redes sociais */
+        .shareArticle {
+            display: flex;
+            flex-flow: column;
+            align-items: center;
+            padding: 15px;
+            margin: 50px 0;
+            z-index: 99;
+        }
+
+        .socialList {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .socialList li {
+            margin: 10px;
+            opacity: 0;
+            transform: translateY(100px);
+        }
+
+        .socialList li a {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            text-decoration: none;
+            color: #fff;
+            font-size: 1.5em;
+            transition: transform 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .socialList li a:hover {
+            transform: scale(1.1);
+        }
+
+        .socialList li:nth-child(1) a { background-color: #135cb6; }
+        .socialList li:nth-child(2) a { background-color: #00aced; }
+        .socialList li:nth-child(3) a { background-color: #BD081C; }
+        .socialList li:nth-child(4) a { background-color: #111111; }
+
+        @keyframes bounceUp {
+            0% { transform: translateY(100px); opacity: 0; }
+            50% { transform: translateY(-15px); opacity: 1; }
+            70% { transform: translateY(5px); }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+
+        
+/*menu topo*/
+.menu-topo{
+    position: sticky;
+    top: 60px;
+    z-index: 50; 
+    transition: .3s;
+}  
+.navigation__link {
+    background-color: #e6340c;
+    width: 20%;
+    text-transform: uppercase;
+    font-size: 13px;
+    display: inline;
+    float: left;
+    color: #000000;
+    text-decoration: none;
+    padding: 10px 0px 30px 0px;
+    font-weight: 400;
+    opacity: 0.5;
+    position: relative;
+}
+.navigation__link img{
+    max-width: 65px;
+    margin-bottom: 5px;
+}
+.navigation__link:hover {
+    background-color:#681300;
+    color: white;
+}
+.navigation__link.active {
+    color: #681300;
+    background-color: #681300;
+    opacity: 1;
+    font-weight: bold; 
+    position: relative;
+}
+.scrol-up{
+  top: 60px !important;
+}
+.scrol-down{
+  top: 0px !important;
+}
+.texto-menu{
+    width: 100%;
+    position: absolute;
+    top: 2px;
+    left: 0%;
+    text-align: center;
+    color: white;
+    font-size: 25px;
+    font-family:  "giorgiosans-medium",Helvetica,Arial,sans-serif;
+    margin: 3px 0px 2px 0px;
+}
+/*transition: all .1s ease;*/
+.infog-navigation {
+    background-color: #954c3b;
+    margin-left: auto;
+    margin-right: auto;
+    height: 40px;
+    width: 100%;
+    top: 0px;
+    position: relative;
+    color: #fff;
+    z-index: 100;
+    margin: 0 auto;
+    text-align: center;
+    font-size: 15px;
+    font-family: apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+}
+  /*botoes*/    
+  .icones {
+    max-width: 300px;
+    padding-top: 0px;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: none;
+}
+    </style>
+</head>
+<body>
+    <!-- menu de navegação -->    
+    <div class="menu-topo" id="menu-topo">
+        <nav class="infog-navigation" id="mainNav">
+            <div class="icones" >
+                <div><a class="navigation__link" href="#1"><span class="texto-menu">1925</span></a></div>
+                <div><a class="navigation__link" href="#2"><span class="texto-menu">1945</span></a></div>
+                <div><a class="navigation__link" href="#3"><span class="texto-menu">1955</span></a></div>
+                <div><a class="navigation__link" href="#4"><span class="texto-menu">1975</span></a></div>
+                <div><a class="navigation__link" href="#5"><span class="texto-menu">1995</span></a></div>
+            </div>
+        </nav>
+    </div>
+
+
+    
+    <div id="infog-body" class="next-section">
+        <p>Uma história em "Scrollytelling"</p>
+        <p class="texto">O "scrollytelling" é uma técnica de narrativa interativa que utiliza o "scroll" de uma página para contar histórias de forma dinâmica, combinando texto, imagens, vídeos e animações. Ao envolver o utilizador ativamente no processo de leitura, permite uma experiência mais imersiva e envolvente. As vantagens dessa abordagem na comunicação visual incluem uma maior retenção de atenção, pois estimula a interação, facilita a compreensão de informações complexas e cria uma conexão emocional mais forte com o leitor. Aqui fica um exemplo simples.</p>
+    </div>
+    
+    <div class="scrollytelling">
+        <div class="svg-container">
+            <svg id="svg-scroll" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 741.2 485.5">
+                <defs>
+                  <style>
+                    .st0 { fill: none; }
+                    .st1 { fill: #f15b40; }
+                    .st2 { stroke: #f15b40; fill:none}
+                    .st4 { fill: #b1aa60; }
+                    .st5 { fill: #627fb2;}
+                  </style>
+                </defs>
+
+                
+                <g id="base-dia">
+                    <image width="5184" height="3456" transform="translate(-135 -172.7) scale(.2)" xlink:href="https://raw.githubusercontent.com/YosephAlves/storytelling/6bb4fa6ad890b8b2d13fa065c0afc517e8f75331/base0.jpg"/>
+                </g>
+                <g id="base-noite">
+                    <rect id="fundo-azul" class="st5" x="-7381.6" y="-2259.2" width="15504.2" height="5004.2"/>
+                    <image class="st2" width="5184" height="3456" transform="translate(-135 -172.6) scale(.2)" xlink:href="https://raw.githubusercontent.com/YosephAlves/storytelling/6bb4fa6ad890b8b2d13fa065c0afc517e8f75331/base-noite.png"/>
+                    
+                </g>
+                <g id="lapis">
+                    <image width="449" height="140" transform="translate(597.6 396.5) scale(.3)" xlink:href="https://raw.githubusercontent.com/YosephAlves/storytelling/6bb4fa6ad890b8b2d13fa065c0afc517e8f75331/lapis.png"/>
+                </g>
+                <g id="candeeiro">
+                    <image width="1690" height="1578" transform="translate(-283.9 72.8) scale(.3)" xlink:href="https://raw.githubusercontent.com/YosephAlves/storytelling/6bb4fa6ad890b8b2d13fa065c0afc517e8f75331/candeeiro.png"/>
+                </g>
+                <g id="sombra">
+                    <image width="154" height="15" transform="translate(293 315) scale(.5)" xlink:href="https://raw.githubusercontent.com/YosephAlves/storytelling/6bb4fa6ad890b8b2d13fa065c0afc517e8f75331/sombra-papel.png"/>
+                </g>
+                <g id="papel">
+                    <image width="277" height="224" transform="translate(295 357.5) scale(.2)" xlink:href="https://raw.githubusercontent.com/YosephAlves/storytelling/6bb4fa6ad890b8b2d13fa065c0afc517e8f75331/papel.png"/>
+                </g>
+                <g id="passo-4">
+                    <path id="linha" class="st2" d="M235,111.8c52.4,84.5,202.1,84.5,254.5,0"/>
+                </g>
+            </svg>
+        </div>
+
+        <div class="step" data-target="baseNoite">
+            <p class="passo1">Primeiro acendemos a luz.</p>
+        </div>
+        <div class="step" data-target="candeeiro">
+            <p class="passo2">Depois começamos por avaliar os recursos possíveis...</p>
+        </div>
+        <div class="step" data-target="papel">
+            <p class="passo3">... depois é ter muitas ideias...</p>
+        </div>
+        <div class="step" data-target="lapis">
+            <p class="passo4">... e gastar carvão até à narrativa ficar perfeita.</p>
+        </div>
+        <div class="step" data-target="azeitona">
+            <p class="passo5">Depois é trabalhar.</p>
+        </div>
+    </div>
+
+    <div class="next-section">Esta é a segunda secção centrada horizontalmente</div>
+
+
+
+
+    <div class="shareArticle">
+        <ul class="socialList">
+            <li><a href="https://www.linkedin.com/in/josecmalves/" target="_blank"><i class="fa-brands fa-linkedin-in"></i></a></li>
+            <li><a href="https://www.behance.net/josephDrawings" target="_blank"><i class="fa-brands fa-square-behance"></i></a></li>
+            <li><a href="https://www.instagram.com/yosephalves/" target="_blank"><i class="fa-brands fa-square-instagram"></i></a></li>
+            <li><a href="mailto:josecmalves@icloud.com"><i class="fa-solid fa-envelope"></i></a></li>
+        </ul>
+    </div>
+
+    <div class="next-section">FIM</div>
+
+    <script>
+
+        const steps = document.querySelectorAll('.step');
+        const sombra = document.getElementById('sombra');
+        const elements = {
+            papel: document.getElementById('papel'),
+            candeeiro: document.getElementById('candeeiro'),
+            lapis: document.getElementById('lapis'),
+            azeitona: document.getElementById('azeitona'),
+            linha: document.getElementById('linha'),
+            baseNoite: document.getElementById('base-noite'),
+        };
+
+
+        let pathLength = 0;
+        if (elements.linha) {
+            pathLength = elements.linha.getTotalLength();
+            // Define o estilo inicial da linha como tracejado
+            elements.linha.style.stroke = "#f15b40";  // Cor do tracejado
+            elements.linha.style.strokeWidth = "6";   // Espessura da linha
+            elements.linha.style.strokeDasharray = pathLength;  // Tamanho do tracejado
+            elements.linha.style.strokeDashoffset = pathLength; // Inicialmente, a linha está "escondida"
+        }
+
+function updateTransform() {
+    const viewportCenter = window.innerHeight / 2;
+
+    steps.forEach((step, index) => {
+        const targetId = step.getAttribute('data-target');
+        const element = elements[targetId];
+        if (!element) return;
+
+        const rect = step.getBoundingClientRect();
+        const progress = Math.min(Math.max((viewportCenter - rect.top) / viewportCenter, 0), 1);  // Simplificado
+
+
+        if (targetId === 'baseNoite') {
+            element.style.opacity = (1 - progress).toFixed(2);  // Ajusta a opacidade
+        }
+        
+        if (targetId === 'papel') {
+            element.style.transform = `translateY(${progress * 500 - 580}px)`;
+            element.style.opacity = progress;
+
+            // Torna a sombra visível apenas quando o papel atingir o final
+            sombra.style.opacity = progress === 1 ? 1 : 0;
+
+        } else if (targetId === 'candeeiro') {
+            element.style.transform = `translateX(${progress * 500 - 500}px)`;
+            element.style.opacity = progress;
+        } else if (targetId === 'lapis') {
+            const translateX = (1 - progress) * 300;
+            const translateY = (1 - progress) * 200;
+            element.style.transform = `translate(${translateX}px, ${translateY}px)`;
+            element.style.opacity = progress;
+        }
+    });
+
+        // Preenchendo a linha com tracejado
+    const azeitonaStep = document.querySelector('.step[data-target="azeitona"]');
+    if (elements.linha && azeitonaStep) {
+        const rect = azeitonaStep.getBoundingClientRect();
+        const progress = Math.min(Math.max((viewportCenter - rect.top + 150) / viewportCenter, 0), 1);
+
+        // Calcula o deslocamento do tracejado com base no progresso
+        const dashoffset = pathLength * (1 - progress); 
+
+        // Atualiza a linha para mostrar o preenchimento de tracejado
+        elements.linha.style.strokeDashoffset = dashoffset;
+
+        // Ajusta a opacidade da linha
+        elements.linha.style.opacity = progress;
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const baseNoite = document.getElementById('base-noite');
+    baseNoite.style.opacity = "1";  // Garante que aparece no início
+    setTimeout(updateTransform, 100); // Dá um pequeno delay para processar o primeiro cálculo
+    window.addEventListener('scroll', updateTransform);
+});
+
+
+    
+
+        // REDES SOCIAIS
+document.addEventListener("DOMContentLoaded", function () {
+            const socialItems = document.querySelectorAll(".socialList li");
+
+            const observerOptions = {
+                root: null,
+                threshold: 0.2 
+            };
+
+            const animateItems = (entries, observer) => {
+                entries.forEach((entry, index) => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animation = `bounceUp 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) ${index * 0.15}s forwards`;
+                        observer.unobserve(entry.target);
+                    }
+                });
+            };
+
+            const observer = new IntersectionObserver(animateItems, observerOptions);
+
+            socialItems.forEach((item) => {
+                observer.observe(item);
+            });
+        });
+
+
+
+
+
+
+
+
+//MENU-TOPO  
+function myFunction() {
+  var x = $('#myLinks');
+    var xx = $('.topnav a.icon::after');
+  if ($('#myLinks').css('display') === 'block') {
+    //x.style.display = "none";
+      $('#myLinks').attr("style", "display:none");
+      $('#seta').removeClass("seta-b");
+      $('#seta').addClass("seta-a");
+  } else {
+    //x.style.display = "block";
+      $('#myLinks').attr("style", "display:block");
+    $('#seta').removeClass("seta-a");
+      $('#seta').addClass("seta-b");
+  }
+}
+    
+
+
+
+var lastScrollTop = 0;
+var menu = document.getElementById("menu-topo");
+
+    
+
+// element should be replaced with the actual target element on which you have applied scroll, use window in case of no target element.
+window.addEventListener("scroll", function(){ // or window.addEventListener("scroll"....
+   var st = window.pageYOffset || document.documentElement.scrollTop; // Credits: "https://github.com/qeremy/so/blob/master/so.dom.js#L426"
+    
+    console.log(st);
+    //var alturaCabeca = document.getElementById("story-header").offsetHeight;
+    
+    var alturaCabeca = 0;
+
+    console.log('cabeca: ' + alturaCabeca);
+    
+    if ( st > alturaCabeca + 61){
+       if (st > lastScrollTop){
+          // downscroll code
+           menu.classList.remove("scrol-up");
+           menu.classList.add("scrol-down");
+       } else {
+          // upscroll code
+           menu.classList.remove("scrol-down");
+           menu.classList.add("scrol-up");
+       }
+        
+    } else{
+       
+   }
+    
+    
+   lastScrollTop = st <= 0 ? 0 : st; // For Mobile or negative scrolling
+}, false);
+
+
+$('a').on('click', function(){
+     var target = $(this).attr('rel');
+     $("#"+target).show().siblings(".esconde").hide();
+      
+   
+});
+
+    </script>
+    
+</body>
+</html>
